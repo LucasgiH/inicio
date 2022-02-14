@@ -1,0 +1,37 @@
+<!doctype html>
+<body > <h2>Modal Login Form</h2>
+ <div class="conteudo" ><span id="outputDb">iniciando banco</span> </div>
+ <script>
+let outDB;
+let db;
+
+const createDB = function(){
+if(window.indexedDB){
+alert('foi');
+const request=window.indexedDB.open('myDB', 3);
+request.onsuccess=function(event){
+alert('sucesso', event);
+}
+request.onerror=function(event){
+alert('erro', event);
+}
+request.onupgradeneeded=function(event){
+db=event.target.result;
+const objectStoreLogin=db.createObjectStore('login',{
+keyPath: 'id',
+autoIncrement: true
+});
+objectStoreLogin.createIndex('usuario', 'usuario',{unique: true});
+objectStoreLogin.createIndex('senha', 'senha',{unique: false});
+alert('upgrade', event);
+}
+}else{
+alert('n foi');}
+}
+document.addEventListener("DOMContentLoaded", function() { 
+outDB=document.getElementById('outputDb');
+createDB();
+ });
+ </script>
+</body>
+</html>
