@@ -1,0 +1,63 @@
+<!doctype html>
+<body > <h2>Modal Login Form</h2>
+ <button onclick='deleteDb()'>Limpar</button>
+<button onclick='addData()'>Enviar</button>
+ <div class="conteudo" ><span id="outputDb">iniciando banco</span> </div>
+ <script>
+let outDB, db;
+const dbName='myDB', storeName='user';
+
+const deleteDb=function(event){
+var req = indexedDB.deleteDatabase(dbName); 
+req.onsuccess = function () { alert("Deleted database successfully"); };
+ req.onerror = function () { alert("Couldn't delete database"); };
+req.onblocked = function () { alert("Couldn't delete database due to the operation being blocked"); };
+}
+const createDB = function(){
+if(window.indexedDB){
+alert('foi');
+const request=window.indexedDB.open(dbName, 1);
+request.onsuccess=function(event){
+alert('sucesso', event);
+}
+request.onerror=function(event){
+alert('erro', event);
+}
+request.onupgradeneeded=function(event){
+db=event.target.result;
+const objectStore=db.createObjectStore(storeName,{
+keyPath: 'id',
+autoIncrement: true
+});
+objectStore.createIndex('user', 'user',{unique: true});
+objectStore.createIndex('password', 'password',{unique: false});
+alert('upgrade', event);
+//addData();
+}
+}else{
+alert('n foi');}
+}
+const addData=function(event){
+ //simple comportament blocked
+// event.preventDefault();
+ const transactionAdd=db.transaction([storeName], 'readwrite');
+ const objectStore=transactionAdd.objectStore(storeName);
+ const newLogin={
+  user: 'imunizante0',
+  password: '1234'
+ }
+ const request=objectStore.add(newLogin);
+transactionAdd.oncomplete=function(event){
+alert('transaction completed', event);
+}
+transactionAdd.onerror=function(event){
+alert('transaction failed', event);
+}
+}
+document.addEventListener("DOMContentLoaded", function() { 
+outDB=document.getElementById('outputDb');
+createDB();
+ });
+ </script>
+</body>
+</html>
